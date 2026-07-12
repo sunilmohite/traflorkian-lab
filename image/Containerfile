@@ -1,0 +1,11 @@
+FROM registry.access.redhat.com/ubi9/ubi
+RUN dnf install -y httpd gnupg2 && dnf clean all
+RUN useradd -u 1000 -m -d /home/appuser appuser && \
+    sed -i 's/^Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf && \
+    mkdir -p /run/httpd /var/log/httpd && \
+    chown -R appuser:appuser /run/httpd /var/log/httpd /var/www/html /etc/httpd
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+USER 1000
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
